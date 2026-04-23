@@ -912,24 +912,37 @@
   });
 
   // ===== API CALLS =====
-  async function fetchStudents() {
-    showLoading(true);
-    try {
-      const res = await fetch(`${API_BASE}/students`);
-      if (!res.ok) throw new Error('Server error');
-      students = await res.json();
-      filteredStudents = [...students];
-      renderAll();
-    } catch (e) {
-      showToast('Cannot connect to server. Showing demo data.', 'warning');
+ async function fetchStudents() {
+  showLoading(true);
+  
+  // 10 second timeout add karo
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  
+  try {
+    const res = await fetch(`${API_BASE}/students`, { 
+      signal: controller.signal 
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error('Server error');
+    students = await res.json();
+    filteredStudents = [...students];
+    renderAll();
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      showToast('Server wake ho raha hai... thoda wait karo', 'warning');
+      // 5 second baad retry
+      setTimeout(() => fetchStudents(), 5000);
+    } else {
+      showToast('Cannot connect to server. Demo mode.', 'warning');
       students = getDemoData();
       filteredStudents = [...students];
       renderAll();
-    } finally {
-      showLoading(false);
     }
+  } finally {
+    showLoading(false);
   }
-
+}
   async function saveStudent() {
     const name = document.getElementById('f-name').value.trim();
     const roll = document.getElementById('f-roll').value.trim();
