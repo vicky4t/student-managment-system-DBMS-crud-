@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduTrack — Student Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --text: #1a1917;
+    --text2: #6b6860;
+    --text3: #9e9c96;
+    --accent: #2d6a4f;
+    --accent-light: #d8f3dc;
+    --accent-dark: #1b4332;
+    --danger: #c0392b;
+    --danger-light: #fdeaea;
+    --warning: #e67e22;
+    --warning-light: #fef5e7;
+    --info: #2471a3;
+    --info-light: #eaf2fb;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--accent-dark);
+    color: white;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .header-right span {
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+  }
+
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    gap: 0;
+  }
+
+  /* SIDEBAR */
+  aside {
+    width: 220px;
+    min-height: calc(100vh - 64px);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .nav-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text2);
+    font-weight: 400;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-weight: 500;
+  }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+  .nav-count {
+    margin-left: auto;
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  /* MAIN CONTENT */
+  main {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .page-subtitle {
+    font-size: 0.85rem;
+    color: var(--text3);
+    margin-top: 3px;
+  }
+
+  /* STATS CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .stat-label { font-size: 0.78rem; color: var(--text3); font-weight: 500; }
+  .stat-value { font-size: 1.7rem; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 6px;
+    width: fit-content;
+  }
+  .tag-green { background: var(--accent-light); color: var(--accent-dark); }
+  .tag-blue { background: var(--info-light); color: var(--info); }
+  .tag-orange { background: var(--warning-light); color: var(--warning); }
+  .tag-red { background: var(--danger-light); color: var(--danger); }
+
+  /* BTN */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-outline {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { background: var(--surface2); }
+  .btn-danger {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid #f5c6c6;
+  }
+  .btn-danger:hover { background: #f5c6c6; }
+  .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+  .btn-icon { width: 34px; height: 34px; padding: 0; justify-content: center; border-radius: var(--radius-sm); }
+
+  /* SEARCH BAR */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 0.95rem;
+    pointer-events: none;
+  }
+  select.filter-select {
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* STUDENT CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  /* STUDENT CARD */
+  .student-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .student-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  .card-accent-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .bar-cs { background: linear-gradient(90deg, #2d6a4f, #52b788); }
+  .bar-it { background: linear-gradient(90deg, #1a6fa8, #3498db); }
+  .bar-ec { background: linear-gradient(90deg, #8e44ad, #c39bd3); }
+  .bar-me { background: linear-gradient(90deg, #d35400, #f39c12); }
+  .bar-ce { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+  .bar-other { background: linear-gradient(90deg, #636e72, #b2bec3); }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+    margin-top: 8px;
+  }
+  .avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+  }
+  .av-m { background: #dbeafe; color: #1d4ed8; }
+  .av-f { background: #fce7f3; color: #9d174d; }
+
+  .card-name {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+  .card-roll {
+    font-size: 0.78rem;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 0.9rem;
+    margin-bottom: 0.9rem;
+  }
+  .card-field label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .card-field span {
+    font-size: 0.85rem;
+    color: var(--text);
+    font-weight: 400;
+  }
+  .branch-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .branch-CS { background: #d8f3dc; color: #1b4332; }
+  .branch-IT { background: #dbeafe; color: #1e40af; }
+  .branch-EC { background: #f3e8ff; color: #6b21a8; }
+  .branch-ME { background: #fef3c7; color: #92400e; }
+  .branch-CE { background: #fee2e2; color: #991b1b; }
+  .branch-OTHER { background: #f1f5f9; color: #475569; }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+    padding-top: 0.9rem;
+  }
+  .gender-badge {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  .gender-M { background: #dbeafe; color: #1e40af; }
+  .gender-F { background: #fce7f3; color: #9d174d; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text2);
+    grid-column: 1/-1;
+  }
+  .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state h3 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 0.85rem; color: var(--text3); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 0;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(20px);
+    transition: transform 0.2s;
+    overflow: hidden;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+  }
+  .modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+  .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    background: var(--surface2);
+  }
+  .close-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text3); font-size: 1.2rem; line-height: 1;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .close-btn:hover { background: var(--border); color: var(--text); }
+
+  /* FORM */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text2);
+  }
+  .form-group input,
+  .form-group select {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border 0.15s;
+  }
+  .form-group input:focus,
+  .form-group select:focus { border-color: var(--accent); }
+  .form-error { font-size: 0.75rem; color: var(--danger); margin-top: 3px; display: none; }
+  .form-group.has-error input,
+  .form-group.has-error select { border-color: var(--danger); }
+  .form-group.has-error .form-error { display: block; }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 300;
+  }
+  .toast {
+    background: var(--text);
+    color: white;
+    padding: 0.75rem 1.1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease, fadeOut 0.4s ease 2.6s forwards;
+    max-width: 320px;
+  }
+  .toast.success { background: var(--accent-dark); }
+  .toast.error { background: var(--danger); }
+  .toast.warning { background: var(--warning); }
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(30px); }
+  }
+
+  /* CONFIRM MODAL */
+  .confirm-icon {
+    width: 52px; height: 52px;
+    background: var(--danger-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin: 0 auto 1rem;
+  }
+  .confirm-body {
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .confirm-body h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .confirm-body p { font-size: 0.875rem; color: var(--text2); }
+
+  /* LOADING */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.7);
+    z-index: 400;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SECTION HIDDEN */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* TABLE VIEW (for list view) */
+  .table-wrap { overflow-x: auto; }
+  table.students-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  table.students-table th {
+    background: var(--surface2);
+    padding: 0.7rem 1rem;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+  }
+  table.students-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  table.students-table tr:hover td { background: var(--surface2); }
+  table.students-table tr:last-child td { border-bottom: none; }
+
+  .view-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .view-btn {
+    padding: 0.5rem 0.75rem;
+    background: var(--surface);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .view-btn:hover { background: var(--surface2); }
+  .view-btn.active { background: var(--accent); color: white; }
+
+  /* DASHBOARD */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .dash-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .dash-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    margin-bottom: 1rem;
+  }
+  .branch-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .branch-bar-label { width: 32px; font-size: 0.8rem; font-weight: 600; color: var(--text2); }
+  .branch-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .branch-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .branch-bar-count { font-size: 0.78rem; color: var(--text3); min-width: 20px; text-align: right; }
+
+  .recent-list { display: flex; flex-direction: column; gap: 10px; }
+  .recent-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; }
+  .recent-info { flex: 1; }
+  .recent-name { font-size: 0.875rem; font-weight: 500; }
+  .recent-roll { font-size: 0.75rem; color: var(--text3); }
+  .recent-badge { font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+    aside { width: 60px; padding: 1rem 0.4rem; }
+    .nav-item span:not(.nav-icon) { display: none; }
+    .nav-item { justify-content: center; }
+    .nav-count { display: none; }
+    .nav-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🎓</div>
+    SVIT-EduTrack
+  </div>
+  <div class="header-right">
+    <span>Student Management System</span>
+    <div class="header-badge">v1.0</div>
+  </div>
+</header>
+
+<div class="main-layout">
+  <aside>
+    <span class="nav-label">Menu</span>
+    <button class="nav-item active" onclick="showSection('dashboard', this)">
+      <span class="nav-icon">📊</span><span>Dashboard</span>
+    </button>
+    <button class="nav-item" onclick="showSection('students', this)">
+      <span class="nav-icon">👥</span><span>Students</span>
+      <span class="nav-count" id="nav-count">0</span>
+    </button>
+    <span class="nav-label">Actions</span>
+    <button class="nav-item" onclick="openAddModal()">
+      <span class="nav-icon">➕</span><span>Add Student</span>
+    </button>
+  </aside>
+
+  <main>
+    <!-- DASHBOARD -->
+    <div class="section active" id="section-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle">Overview of your student records</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="stat-total">0</div>
+          <span class="stat-tag tag-green">All records</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Male Students</div>
+          <div class="stat-value" id="stat-male">0</div>
+          <span class="stat-tag tag-blue">Gender</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Female Students</div>
+          <div class="stat-value" id="stat-female">0</div>
+          <span class="stat-tag tag-orange">Gender</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Branches</div>
+          <div class="stat-value" id="stat-branches">0</div>
+          <span class="stat-tag tag-red">Active</span>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <h3>Students by Branch</h3>
+          <div id="branch-chart"></div>
+        </div>
+        <div class="dash-card">
+          <h3>Recently Added</h3>
+          <div class="recent-list" id="recent-list">
+            <div style="color: var(--text3); font-size: 0.875rem; text-align: center; padding: 1rem;">No students yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENTS LIST -->
+    <div class="section" id="section-students">
+      <div class="page-header">
+        <div>
+          <div class="page-title">All Students</div>
+          <div class="page-subtitle" id="students-subtitle">Loading...</div>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">
+          ➕ Add Student
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search by name or roll no..." oninput="filterStudents()"/>
+        </div>
+        <select class="filter-select" id="branch-filter" onchange="filterStudents()">
+          <option value="">All Branches</option>
+          <option>CS</option><option>IT</option>
+          <option>ECE</option><option>CE</option>
+        </select>
+        <select class="filter-select" id="gender-filter" onchange="filterStudents()">
+          <option value="">All Gender</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" id="view-card-btn" onclick="setView('card')">⊞</button>
+          <button class="view-btn" id="view-list-btn" onclick="setView('list')">☰</button>
+        </div>
+      </div>
+
+      <div id="card-view">
+        <div class="cards-grid" id="students-grid"></div>
+      </div>
+      <div id="list-view" style="display:none;">
+        <div class="table-wrap">
+          <table class="students-table" id="students-table">
+            <thead>
+              <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="student-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Add New Student</div>
+      <button class="close-btn" onclick="closeModal('student-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group" id="fg-name">
+          <label>Full Name *</label>
+          <input type="text" id="f-name" placeholder="e.g. prashant girge/>
+          <span class="form-error">Name is required</span>
+        </div>
+        <div class="form-group" id="fg-roll">
+          <label>Roll Number *</label>
+          <input type="text" id="f-roll" placeholder="e.g. 27"/>
+          <span class="form-error">Roll number is required</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" id="fg-branch">
+          <label>Branch *</label>
+          <select id="f-branch">
+            <option value="">Select Branch</option>
+            <option>CS</option><option>IT</option>
+            <option>ECE</option><option>CE</option>
+          </select>
+          <span class="form-error">Branch is required</span>
+        </div>
+        <div class="form-group" id="fg-gender">
+          <label>Gender *</label>
+          <select id="f-gender">
+            <option value="">Select Gender</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
+          <span class="form-error">Gender is required</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" id="f-dob"/>
+      </div>
+      <div id="form-server-error" style="display:none; color: var(--danger); font-size: 0.825rem; padding: 0.5rem; background: var(--danger-light); border-radius: var(--radius-sm);"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('student-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStudent()" id="save-btn">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="max-width: 380px;">
+    <div class="modal-body">
+      <div class="confirm-body">
+        <div class="confirm-icon">🗑️</div>
+        <h3>Delete Student?</h3>
+        <p id="confirm-msg">This action cannot be undone. The student record will be permanently removed.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()" id="delete-confirm-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div style="font-size: 0.875rem; color: var(--text2);">Please wait...</div>
+</div>
+
+<script>
+  // ===== CONFIG =====
+  // Change this to your deployed backend URL
+  const API_BASE = 'http://localhost:5000/api';
+
+  // ===== STATE =====
+  let students = [];
+  let filteredStudents = [];
+  let currentView = 'card';
+  let editingId = null;
+  let deleteTargetId = null;
+  let deleteTargetName = '';
+
+  // ===== INIT =====
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchStudents();
+  });
+
+  // ===== API CALLS =====
+  async function fetchStudents() {
+    showLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/students`);
+      if (!res.ok) throw new Error('Server error');
+      students = await res.json();
+      filteredStudents = [...students];
+      renderAll();
+    } catch (e) {
+      showToast('Cannot connect to server. Showing demo data.', 'warning');
+      students = getDemoData();
+      filteredStudents = [...students];
+      renderAll();
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  async function saveStudent() {
+    const name = document.getElementById('f-name').value.trim();
+    const roll = document.getElementById('f-roll').value.trim();
+    const branch = document.getElementById('f-branch').value;
+    const gender = document.getElementById('f-gender').value;
+    const dob = document.getElementById('f-dob').value;
+
+    let valid = true;
+    const fields = [
+      { id: 'fg-name', val: name },
+      { id: 'fg-roll', val: roll },
+      { id: 'fg-branch', val: branch },
+      { id: 'fg-gender', val: gender },
+    ];
+    fields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!f.val) { el.classList.add('has-error'); valid = false; }
+      else el.classList.remove('has-error');
+    });
+    if (!valid) return;
+
+    const payload = { name, rollNo: roll, branch, gender, dob: dob || null };
+    const saveBtn = document.getElementById('save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    hideFormError();
+
+    try {
+      let res;
+      if (editingId) {
+        res = await fetch(`${API_BASE}/students/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch(`${API_BASE}/students`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Save failed');
+      }
+      await fetchStudents();
+      closeModal('student-modal');
+      showToast(editingId ? `✅ ${name} updated successfully!` : `✅ ${name} added successfully!`, 'success');
+    } catch (e) {
+      if (e.message.includes('fetch')) {
+        // Demo mode
+        const student = { ...payload, _id: editingId || 'demo_' + Date.now(), createdAt: new Date().toISOString() };
+        if (editingId) {
+          const idx = students.findIndex(s => s._id === editingId);
+          if (idx !== -1) students[idx] = student;
+        } else {
+          students.unshift(student);
+        }
+        filteredStudents = [...students];
+        renderAll();
+        closeModal('student-modal');
+        showToast(editingId ? `✅ ${name} updated!` : `✅ ${name} added!`, 'success');
+      } else {
+        showFormError(e.message);
+      }
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Student';
+    }
+  }
+
+  function openDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    deleteTargetName = name;
+    document.getElementById('confirm-msg').textContent = `"${name}" will be permanently removed. This cannot be undone.`;
+    openModal('confirm-modal');
+  }
+
+  async function confirmDelete() {
+    const btn = document.getElementById('delete-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Deleting...';
+    try {
+      const res = await fetch(`${API_BASE}/students/${deleteTargetId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      await fetchStudents();
+      closeModal('confirm-modal');
+      showToast(`🗑️ "${deleteTargetName}" has been deleted.`, 'success');
+    } catch (e) {
+      students = students.filter(s => s._id !== deleteTargetId);
+      filteredStudents = filteredStudents.filter(s => s._id !== deleteTargetId);
+      renderAll();
+      closeModal('confirm-modal');
+      showToast(`🗑️ "${deleteTargetName}" has been deleted.`, 'success');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Delete';
+    }
+  }
+
+  // ===== RENDER =====
+  function renderAll() {
+    renderStats();
+    renderDashboard();
+    renderStudents();
+    document.getElementById('nav-count').textContent = students.length;
+    const sub = document.getElementById('students-subtitle');
+    if (sub) sub.textContent = `${filteredStudents.length} of ${students.length} students`;
+  }
+
+  function renderStats() {
+    document.getElementById('stat-total').textContent = students.length;
+    document.getElementById('stat-male').textContent = students.filter(s => s.gender === 'M').length;
+    document.getElementById('stat-female').textContent = students.filter(s => s.gender === 'F').length;
+    const branches = new Set(students.map(s => s.branch)).size;
+    document.getElementById('stat-branches').textContent = branches;
+  }
+
+  function renderDashboard() {
+    // Branch chart
+    const branchCounts = {};
+    students.forEach(s => { branchCounts[s.branch] = (branchCounts[s.branch] || 0) + 1; });
+    const max = Math.max(...Object.values(branchCounts), 1);
+    const colors = { CS: '#2d6a4f', IT: '#1a6fa8', ECE: '#8e44ad',  CE: '#c0392b', OTHER: '#636e72' };
+    const chartEl = document.getElementById('branch-chart');
+    if (Object.keys(branchCounts).length === 0) {
+      chartEl.innerHTML = '<div style="color: var(--text3); font-size: 0.875rem; text-align: center; padding: 1rem;">No data yet</div>';
+    } else {
+      chartEl.innerHTML = Object.entries(branchCounts).map(([branch, count]) => `
+        <div class="branch-bar-row">
+          <span class="branch-bar-label">${branch}</span>
+          <div class="branch-bar-track">
+            <div class="branch-bar-fill" style="width: ${(count/max)*100}%; background: ${colors[branch] || '#636e72'};"></div>
+          </div>
+          <span class="branch-bar-count">${count}</span>
+        </div>
+      `).join('');
+    }
+
+    // Recent list
+    const recent = [...students].slice(0, 5);
+    const recentEl = document.getElementById('recent-list');
+    if (recent.length === 0) {
+      recentEl.innerHTML = '<div style="color: var(--text3); font-size: 0.875rem; text-align: center; padding: 1rem;">No students yet</div>';
+    } else {
+      recentEl.innerHTML = recent.map(s => `
+        <div class="recent-item">
+          <div class="recent-avatar ${s.gender === 'F' ? 'av-f' : 'av-m'}">${getInitials(s.name)}</div>
+          <div class="recent-info">
+            <div class="recent-name">${s.name}</div>
+            <div class="recent-roll">${s.rollNo}</div>
+          </div>
+          <span class="recent-badge branch-${s.branch}">${s.branch}</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  function renderStudents() {
+    filterStudents();
+  }
+
+  function filterStudents() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const branch = document.getElementById('branch-filter').value;
+    const gender = document.getElementById('gender-filter').value;
+    filteredStudents = students.filter(s => {
+      const matchQ = !q || s.name.toLowerCase().includes(q) || s.rollNo.toLowerCase().includes(q);
+      const matchB = !branch || s.branch === branch;
+      const matchG = !gender || s.gender === gender;
+      return matchQ && matchB && matchG;
+    });
+    document.getElementById('students-subtitle').textContent = `${filteredStudents.length} of ${students.length} students`;
+    if (currentView === 'card') renderCardView();
+    else renderListView();
+  }
+
+  function renderCardView() {
+    const grid = document.getElementById('students-grid');
+    if (filteredStudents.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>No students found</h3><p>Try adjusting your search or filters.</p></div>`;
+      return;
+    }
+    grid.innerHTML = filteredStudents.map(s => studentCard(s)).join('');
+  }
+
+  function renderListView() {
+    const tbody = document.getElementById('students-tbody');
+    if (filteredStudents.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text3);">No students found</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filteredStudents.map(s => `
+      <tr>
+        <td><strong>${s.rollNo}</strong></td>
+        <td>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="recent-avatar ${s.gender==='F'?'av-f':'av-m'}" style="width:30px;height:30px;font-size:0.75rem;">${getInitials(s.name)}</div>
+            ${s.name}
+          </div>
+        </td>
+        <td><span class="branch-badge branch-${s.branch}">${s.branch}</span></td>
+        <td><span class="gender-badge gender-${s.gender}">${s.gender === 'M' ? 'Male' : 'Female'}</span></td>
+        <td>${s.dob ? formatDate(s.dob) : '—'}</td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="openEditModal('${s._id}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="openDeleteConfirm('${s._id}', '${escapeHtml(s.name)}')">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function studentCard(s) {
+    const barClass = `bar-${['CS','IT','ECE','CE'].includes(s.branch) ? s.branch : 'other'}`;
+    return `
+      <div class="student-card">
+        <div class="card-accent-bar ${barClass}"></div>
+        <div class="card-top">
+          <div class="avatar ${s.gender === 'F' ? 'av-f' : 'av-m'}">${getInitials(s.name)}</div>
+          <div>
+            <div class="card-name">${s.name}</div>
+            <div class="card-roll">${s.rollNo}</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-field">
+            <label>Branch</label>
+            <span class="branch-badge branch-${s.branch}">${s.branch}</span>
+          </div>
+          <div class="card-field">
+            <label>Gender</label>
+            <span class="gender-badge gender-${s.gender}">${s.gender === 'M' ? 'Male' : 'Female'}</span>
+          </div>
+          <div class="card-field">
+            <label>Date of Birth</label>
+            <span>${s.dob ? formatDate(s.dob) : '—'}</span>
+          </div>
+          <div class="card-field">
+            <label>Roll No</label>
+            <span>${s.rollNo}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openEditModal('${s._id}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="openDeleteConfirm('${s._id}', '${escapeHtml(s.name)}')">🗑️ Delete</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ===== MODALS =====
+  function openAddModal() {
+    editingId = null;
+    document.getElementById('modal-title').textContent = 'Add New Student';
+    document.getElementById('save-btn').textContent = 'Save Student';
+    clearForm();
+    openModal('student-modal');
+  }
+
+  function openEditModal(id) {
+    const s = students.find(x => x._id === id);
+    if (!s) return;
+    editingId = id;
+    document.getElementById('modal-title').textContent = 'Edit Student';
+    document.getElementById('save-btn').textContent = 'Update Student';
+    document.getElementById('f-name').value = s.name;
+    document.getElementById('f-roll').value = s.rollNo;
+    document.getElementById('f-branch').value = s.branch;
+    document.getElementById('f-gender').value = s.gender;
+    document.getElementById('f-dob').value = s.dob ? s.dob.split('T')[0] : '';
+    hideFormError();
+    ['fg-name','fg-roll','fg-branch','fg-gender'].forEach(id => document.getElementById(id).classList.remove('has-error'));
+    openModal('student-modal');
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  function clearForm() {
+    ['f-name','f-roll','f-dob'].forEach(id => document.getElementById(id).value = '');
+    ['f-branch','f-gender'].forEach(id => document.getElementById(id).value = '');
+    ['fg-name','fg-roll','fg-branch','fg-gender'].forEach(id => document.getElementById(id).classList.remove('has-error'));
+    hideFormError();
+  }
+
+  function showFormError(msg) {
+    const el = document.getElementById('form-server-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideFormError() {
+    document.getElementById('form-server-error').style.display = 'none';
+  }
+
+  // ===== SECTIONS =====
+  function showSection(name, btn) {
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(`section-${name}`).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ===== VIEW TOGGLE =====
+  function setView(v) {
+    currentView = v;
+    document.getElementById('card-view').style.display = v === 'card' ? 'block' : 'none';
+    document.getElementById('list-view').style.display = v === 'list' ? 'block' : 'none';
+    document.getElementById('view-card-btn').classList.toggle('active', v === 'card');
+    document.getElementById('view-list-btn').classList.toggle('active', v === 'list');
+    filterStudents();
+  }
+
+  // ===== TOAST =====
+  function showToast(msg, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3100);
+  }
+
+  // ===== LOADING =====
+  function showLoading(show) {
+    document.getElementById('loading').classList.toggle('show', show);
+  }
+
+  // ===== UTILS =====
+  function getInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+  function formatDate(d) {
+    if (!d) return '—';
+    const date = new Date(d);
+    if (isNaN(date)) return d;
+    return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  function escapeHtml(text) {
+    return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+
+  // ===== DEMO DATA =====
+  function getDemoData() {
+    return [
+      { _id: 'd1', name: 'prashant girge', rollNo: '27', branch: 'CS', gender: 'M', dob: '2004-05-15', createdAt: new Date().toISOString() },
+      { _id: 'd2', name: 'pooja chavan', rollNo: '70', branch: 'IT', gender: 'F', dob: '2004-08-22', createdAt: new Date().toISOString() },
+      { _id: 'd3', name: 'gaurav kale', rollNo: '25', branch: 'ECE', gender: 'M', dob: '2003-11-10', createdAt: new Date().toISOString() },
+      { _id: 'd4', name: 'Sneha kale', rollNo: '20', branch: 'CS', gender: 'F', dob: '2004-03-28', createdAt: new Date().toISOString() },
+      { _id: 'd5', name: 'Karad manoj', rollNo: '35', branch: 'CE', gender: 'M', dob: '2003-07-14', createdAt: new Date().toISOString() },
+      { _id: 'd6', name: 'anjli thakare', rollNo: '33', branch: 'CS', gender: 'F', dob: '2004-01-30', createdAt: new Date().toISOString() },
+    ];
+  }
+</script>
+</body>
+</html>
